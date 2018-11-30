@@ -1,10 +1,15 @@
 package com.zilong.android_quickstart.activity;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.*;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -14,7 +19,7 @@ import com.zilong.android_quickstart.mock.PlaceMock;
 import com.zilong.android_quickstart.model.Place;
 import com.zilong.android_quickstart.viewModel.MapGoogleViewModel;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnCameraIdleListener, OnMapReadyCallback {
 
     private final static int DEFAULT_ZOOM = 12;
     public final static LatLng CAMERA_LAT_LNG = new LatLng(52.0293775, -0.8071433);
@@ -35,12 +40,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        onCreateView();
+    }
+
+    private void onCreateView(){
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-    }
 
+        //init Actions button
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.map_actions);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+    }
 
     /**
      * Manipulates the map once available.
@@ -54,7 +73,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setOnCameraIdleListener(this);
         initViewModel();
+    }
+
+
+    @Override
+    public void onCameraIdle() {
+        enableSearchHereBtn();
+    }
+
+    private void enableSearchHereBtn(){
+        Toast.makeText(this, "Enable Search Here Button When The camera has stopped moving.", Toast.LENGTH_SHORT).show();
     }
 
     private void initViewModel(){
