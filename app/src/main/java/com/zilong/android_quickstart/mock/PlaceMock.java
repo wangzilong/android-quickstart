@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.zilong.android_quickstart.activity.MapsActivity.CAMERA_LAT_LNG;
+import static com.zilong.android_quickstart.viewModel.MapGoogleViewModel.CAMERA_LAT_LNG;
 
 public class PlaceMock {
     public static List<Place> PLACES = new ArrayList<>();

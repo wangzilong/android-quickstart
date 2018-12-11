@@ -6,7 +6,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.*;
@@ -20,10 +19,6 @@ import com.zilong.android_quickstart.model.Place;
 import com.zilong.android_quickstart.viewModel.MapGoogleViewModel;
 
 public class MapsActivity extends FragmentActivity implements OnCameraIdleListener, OnMapReadyCallback {
-
-    private final static int DEFAULT_ZOOM = 12;
-    public final static LatLng CAMERA_LAT_LNG = new LatLng(52.0293775, -0.8071433);
-    private LatLng cameraLatLng = CAMERA_LAT_LNG;
 
     private MapGoogleViewModel vm;
 
@@ -55,10 +50,18 @@ public class MapsActivity extends FragmentActivity implements OnCameraIdleListen
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                onClickSearchBtn();
             }
         });
+    }
+
+
+    private void onClickSearchBtn(){
+        disableSearchHereBtn();
+        vm.setLatLng(mMap.getCameraPosition().target);
+        vm.setZoom((int) mMap.getCameraPosition().zoom);
+        onChangedViewModel();
+        Toast.makeText(this, "Camera Location:"+ vm.getLatLng().toString(), Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -84,23 +87,30 @@ public class MapsActivity extends FragmentActivity implements OnCameraIdleListen
     }
 
     private void enableSearchHereBtn(){
-        Toast.makeText(this, "Enable Search Here Button When The camera has stopped moving.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Enable Search Button.", Toast.LENGTH_SHORT).show();
+    }
+
+    private void disableSearchHereBtn(){
+        Toast.makeText(this, "Disable Search Button.", Toast.LENGTH_SHORT).show();
     }
 
     private void initViewModel(){
-        vm = new MapGoogleViewModel();
-        vm.setPlaces(PlaceMock.PLACES);
+        if (vm == null)
+            vm = new MapGoogleViewModel();
         onChangedViewModel();
     }
 
     private void onChangedViewModel(){
+        //mock data
+        vm.setPlaces(PlaceMock.PLACES);
+
         for (Place place : vm.getPlaces()) {
             mMap.addMarker(buildMarker(place));
         }
         if (!vm.getPlaces().isEmpty()){
-            cameraLatLng = buildLatLng(vm.getPlaces().get(0));
+            vm.setLatLng(buildLatLng(vm.getPlaces().get(0)));
         }
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraLatLng, DEFAULT_ZOOM));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(vm.getLatLng(), vm.getZoom()));
     }
 
     private MarkerOptions buildMarker(Place place){

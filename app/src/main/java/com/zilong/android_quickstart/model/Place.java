@@ -1,5 +1,7 @@
 package com.zilong.android_quickstart.model;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.Date;
 
 public class Place {
